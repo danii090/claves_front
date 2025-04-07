@@ -98,7 +98,3 @@ Los archivos finales estarán en la carpeta `dist/`.
 - Este proyecto usa múltiples páginas HTML (no SPA), por lo que cada HTML se configura individualmente en `vite.config.js`.
 
 ---
-
-## 📚 Créditos
-
-Desarrollado por Erik Caballero 🙌
