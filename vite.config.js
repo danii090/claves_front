@@ -6,12 +6,12 @@ export default defineConfig({
     build: {
         rollupOptions: {
             input: {
-                main: resolve(__dirname, 'src/index.html'),
-                dashboard: resolve(__dirname, 'src/dashboard.html'),
+                main: resolve(__dirname, 'src/views/index.html'),
+                dashboard: resolve(__dirname, 'src/views/dashboard.html'),
             },
         },
     },
     server: {
-        open: '/src/index.html', // para que abra el login al hacer npm run dev
+        open: '/src/views/index.html', // para que abra el login al hacer npm run dev
     },
 });
