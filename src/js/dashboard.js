@@ -42,13 +42,14 @@ axios.get('http://localhost:3000/api/auth/session', {
           <td>${clave.sitio}</td>
           <td>${clave.nombre_clave}</td>
           <td>${clave.categoria.nombre}</td>
+          <td>${clave.usuario}</td>
           <td>••••••••</td>
           <th>
             <button type="button" class="btn" onclick="verClave(this, '${clave.clave}')">
               <i class="lni lni-eye"></i>
             </button>
           </th>
-          <td>${clave.compartir === 1 ? '✅ Compartida' : '❌ No compartida'}</td>
+          <td>${clave.compartir === 1 ? '✅ Compartida' : '❌ No compartida'}</td>  
           <td>${clave.id_usuario}</td>
           <th>
             <button type="button" class="btn btn-outline-primary" onclick='abrirModalEditar(${JSON.stringify(clave)})'>Editar</button>
@@ -65,7 +66,7 @@ axios.get('http://localhost:3000/api/auth/session', {
   
   // Función para mostrar la clave real temporalmente
   function verClave(boton, clave) {
-    const td = boton.closest('tr').children[4]; // La celda con '••••••••'
+    const td = boton.closest('tr').children[5]; // La celda con '••••••••'
     const original = td.textContent;
     td.textContent = clave;
   
@@ -95,7 +96,7 @@ obtenerUsuario();
 
 //Busqueda
 const inputBuscador = document.getElementById('buscador');
-const cuerpoTabla = document.querySelector('.table tbody'); // Mueve esto arriba
+const cuerpoTabla = document.querySelector('.table tbody'); 
 
 
 inputBuscador.addEventListener('input', () => {
@@ -113,12 +114,12 @@ inputBuscador.addEventListener('input', () => {
     }
   }
 });
-
 ///Modal
 function abrirModalEditar(clave) {
   document.getElementById('editar-id-clave').value = clave.id_clave;
   document.getElementById('editar-sitio').value = clave.sitio;
   document.getElementById('editar-nombre-clave').value = clave.nombre_clave;
+  document.getElementById('editar-usuario').value = clave.usuario;
   document.getElementById('editar-clave').value = clave.clave;
   document.getElementById('editar-compartir').value = clave.compartir;
 
@@ -128,6 +129,8 @@ function abrirModalEditar(clave) {
   const modal = new bootstrap.Modal(document.getElementById('modalEditarClave'));
   modal.show();
 }
+
+//Funcion para cargar las categorias en un select
 async function cargarCategoriasEnSelect(idSelect, idCategoriaSeleccionada = null) {
   try {
     const response = await axios.get('http://localhost:3000/api/categorias', { withCredentials: true });
@@ -151,6 +154,7 @@ async function cargarCategoriasEnSelect(idSelect, idCategoriaSeleccionada = null
     console.error('Error cargando categorías', error);
   }
 }
+//Editar Clave
 document.getElementById('formEditarClave').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -158,9 +162,11 @@ document.getElementById('formEditarClave').addEventListener('submit', async (e) 
   const data = {
     sitio: document.getElementById('editar-sitio').value,
     nombre: document.getElementById('editar-nombre-clave').value,
+    usuario: document.getElementById('editar-usuario').value,
     clave: document.getElementById('editar-clave').value,
     compartir: parseInt(document.getElementById('editar-compartir').value),
     categoria: parseInt(document.getElementById('editar-categoria').value),
+
   };
 
   try {
@@ -170,5 +176,93 @@ document.getElementById('formEditarClave').addEventListener('submit', async (e) 
   } catch (error) {
     console.error('Error al editar clave:', error);
     alert('Error al guardar los cambios');
+  }
+});
+
+// Eliminar clave
+document.getElementById('btnEliminarClave').addEventListener('click', async function() {
+  const id = document.getElementById('editar-id-clave').value;
+  
+  if (!id) {
+    alert('No se ha seleccionado ninguna clave para eliminar');
+    return;
+  }
+
+  if (confirm('¿Estás seguro de que deseas eliminar esta clave? Esta acción no se puede deshacer.')) {
+    try {
+      const response = await axios.delete(`http://localhost:3000/api/claves/${id}`, { 
+        withCredentials: true 
+      });
+      
+      alert('Clave eliminada correctamente');
+      
+      // Cierra el modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarClave'));
+      modal.hide();
+      
+      // Recarga la tabla
+      location.reload();
+      
+    } catch (error) {
+      console.error('Error al eliminar clave:', error);
+      if (error.response && error.response.status === 404) {
+        alert('No se encontró la clave o no tienes permiso para eliminarla');
+      } else {
+        alert('Error al eliminar la clave');
+      }
+    }
+  }
+});
+
+// Función para abrir el modal de creación
+document.getElementById('fab').addEventListener('click', function() {
+  // Cargar categorías en el select
+  cargarCategoriasEnSelect('crear-categoria');
+  
+  // Resetear el formulario
+  document.getElementById('formCrearClave').reset();
+  
+  // Mostrar el modal
+  const modal = new bootstrap.Modal(document.getElementById('modalCrearClave'));
+  modal.show();
+});
+
+// Manejar el envío del formulario de creación
+document.getElementById('formCrearClave').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {
+      sitio: document.getElementById('crear-sitio').value,
+      nombre: document.getElementById('crear-nombre-clave').value,
+      usuario: document.getElementById('crear-usuario').value,
+      clave: document.getElementById('crear-clave').value,
+      compartir: parseInt(document.getElementById('crear-compartir').value),
+      categoria: parseInt(document.getElementById('crear-categoria').value),
+  };
+
+  try {
+      const response = await axios.post('http://localhost:3000/api/claves', data, { 
+          withCredentials: true,
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      });
+      
+      alert('Clave creada correctamente');
+      
+      // Cerrar el modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalCrearClave'));
+      modal.hide();
+      
+      // Recargar la tabla
+      location.reload();
+      
+  } catch (error) {
+      console.error('Error al crear clave:', error);
+      if (error.response && error.response.status === 400) {
+          alert('Datos incompletos: ' + error.response.data.message);
+      } else {
+          alert('Error al crear la clave');
+      }
   }
 });
