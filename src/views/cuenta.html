@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Gestionar Categorias</title>
     <link href="https://cdn.lineicons.com/5.0/lineicons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
@@ -12,46 +12,23 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
-<!-- Modal para editar clave -->
-<div class="modal fade" id="modalEditarClave" tabindex="-1" aria-labelledby="modalEditarClaveLabel" aria-hidden="true">
+<!-- Modal para editar categorias -->
+<div class="modal fade" id="modalEditarCategorias" tabindex="-1" aria-labelledby="modalEditarCategoriasLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalEditarClaveLabel">Editar Clave</h5>
+          <h5 class="modal-title" id="modalEditarCategoriasLabel">Editar Categorias</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <form id="formEditarClave">
-            <input type="hidden" id="editar-id-clave">
+          <form id="formEditarCategorias">
+            <input type="hidden" id="editar-id-categoria">
             <div class="mb-3">
-              <label for="editar-sitio" class="form-label">Sitio</label>
-              <input type="text" class="form-control" id="editar-sitio" required>
-            </div>
-            <div class="mb-3">
-              <label for="editar-nombre-clave" class="form-label">Nombre Clave</label>
-              <input type="text" class="form-control" id="editar-nombre-clave" required>
-            </div>
-            <div class="mb-3">
-              <label for="editar-categoria" class="form-label">Categoría</label>
-              <select class="form-select" id="editar-categoria"></select>
-            </div>
-            <div class="mb-3">
-                <label for="editar-usuario" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="editar-usuario" required>
-            </div>
-            <div class="mb-3">
-              <label for="editar-clave" class="form-label">Clave</label>
-              <input type="text" class="form-control" id="editar-clave" required>
-            </div>
-            <div class="mb-3">
-              <label for="editar-compartir" class="form-label">Compartir con familia</label>
-              <select class="form-select" id="editar-compartir">
-                <option value="1">Sí</option>
-                <option value="0">No</option>
-              </select>
+              <label for="editar-nombre-categoria" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="editar-nombre-categoria" required>
             </div>
             <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-danger" id="btnEliminarClave">Eliminar Clave</button>
+                <button type="button" class="btn btn-danger" id="btnEliminarCategoria">Eliminar Categoria</button>
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
             </div>
             </form>
@@ -59,45 +36,22 @@
       </div>
     </div>
   </div>
-<!-- Modal para crear clave -->
-<div class="modal fade" id="modalCrearClave" tabindex="-1" aria-labelledby="modalCrearClaveLabel" aria-hidden="true">
+<!-- Modal para crear usuario -->
+<div class="modal fade" id="modalCrearCategoria" tabindex="-1" aria-labelledby="modalCrearCategoriaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalCrearClaveLabel">Nueva Clave</h5>
+                <h5 class="modal-title" id="modalCrearCategoriaLabel">Nueva Categoria</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form id="formCrearClave">
+                <form id="formCrearCategoria">
                     <div class="mb-3">
-                        <label for="crear-sitio" class="form-label">Sitio</label>
-                        <input type="text" class="form-control" id="crear-sitio" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="crear-nombre-clave" class="form-label">Nombre Clave</label>
-                        <input type="text" class="form-control" id="crear-nombre-clave" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="crear-categoria" class="form-label">Categoría</label>
-                        <select class="form-select" id="crear-categoria" required></select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="crear-usuario" class="form-label">Clave</label>
-                        <input type="text" class="form-control" id="crear-usuario" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="crear-clave" class="form-label">Clave</label>
-                        <input type="text" class="form-control" id="crear-clave" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="crear-compartir" class="form-label">Compartir con familia</label>
-                        <select class="form-select" id="crear-compartir" required>
-                            <option value="1">Sí</option>
-                            <option value="0">No</option>
-                        </select>
+                        <label for="crear-nombre-categoria" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="crear-nombre-categoria" required>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Guardar Clave</button>
+                        <button type="submit" class="btn btn-primary">Guardar Categoria</button>
                     </div>
                 </form>
             </div>
@@ -170,27 +124,20 @@
         <div class="main p-3">
             <div class="text-justify">
                 <h1>
-                    Mis Claves
+                    Categorias De Claves
                 </h1>
-                <h5 id="bienvenida">Bienvenido, </h5>
+                <h5 id="bienvenida">Gestión de Categorias - Administrador: </h5>
                 <br>
             </div>
             <div class="input-group mb-3">
-                <input type="text" id="buscador" class="form-control" placeholder="Buscar clave" aria-label="Buscar Clave" aria-describedby="button-addon2">
+                <input type="text" id="buscador" class="form-control" placeholder="Buscar categoria" aria-label="Buscar Clave" aria-describedby="button-addon2">
             </div>
             <div class="table-responsive" >
             <table class="table" >
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Sitio</th>
-                    <th scope="col">Nombre Clave</th>
-                    <th scope="col">Categoria</th>
-                    <th scope="col">Usuario/Correo</th>
-                    <th scope="col">Clave</th>
-                    <th scope="col">Ver</th>
-                    <th scope="col">Compartir con familia</th>
-                    <th scope="col">Usuario</th>
+                    <th scope="col">Nombre</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
@@ -208,6 +155,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-    <script src="../js/dashboard.js"></script>
+    <script src="../js/cuenta.js"></script>
 </body>
 </html>
