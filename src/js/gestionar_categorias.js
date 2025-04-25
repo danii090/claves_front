@@ -1,3 +1,5 @@
+import { obtenerUsuario } from "./funciones.js";
+
 //Barra lateral
 const hamBurger = document.querySelector(".toggle-btn");
 
@@ -23,59 +25,44 @@ axios.get('http://localhost:3000/api/auth/session', {
     }, 1000);
   });
 
-  //Categorias en la tabla
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/api/categorias', { withCredentials: true });
-  
-      console.log("Datos recibidos:", response.data);
-  
-      const cuerpoTabla = document.querySelector('.table tbody');
-      cuerpoTabla.innerHTML = '';
-  
-      const claves = Array.isArray(response.data) ? response.data : [response.data];
-  
-      claves.forEach((categorias, index) => {
-        const fila = document.createElement('tr');
-        fila.innerHTML = `
+//Categorias en la tabla
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/categorias', { withCredentials: true });
+
+    console.log("Datos recibidos:", response.data);
+
+    const cuerpoTabla = document.querySelector('.table tbody');
+    cuerpoTabla.innerHTML = '';
+
+    const claves = Array.isArray(response.data) ? response.data : [response.data];
+
+    claves.forEach((categorias, index) => {
+      const fila = document.createElement('tr');
+      fila.innerHTML = `
           <th scope="row">${index + 1}</th>
           <td>${categorias.nombre_categoria}</td>
           <th>
             <button type="button" class="btn btn-outline-primary" onclick='abrirModalEditar(${JSON.stringify(categorias)})'>Editar</button>
           </th>
         `;
-        cuerpoTabla.appendChild(fila);
-      });
-  
-    } catch (error) {
-      console.error("Error completo:", error);
-      alert("Error al cargar datos. Ver consola para detalles.");
-    }
-  });
-  
+      cuerpoTabla.appendChild(fila);
+    });
+
+  } catch (error) {
+    console.error("Error completo:", error);
+    alert("Error al cargar datos. Ver consola para detalles.");
+  }
+});
+
 
 //Bienvenida
 // Función para obtener datos del usuario 
-async function obtenerUsuario() {
-  try {
-      const respuesta = await axios.get('http://localhost:3000/api/usuarios/1', { withCredentials: true }); // Solicitud GET con Axios
-      const datos = respuesta.data; // Acceso a los datos devueltos por la API
-
-      // Inserta el nombre del usuario en el HTML
-      const nombreUsuario = datos.nombre || "Usuario"; // Si no hay nombre, usa "Usuario" como valor predeterminado
-      document.getElementById("bienvenida").textContent = `Gestión de Categorias - Administrador: ${nombreUsuario}`;
-  } catch (error) {
-      console.error("Error al obtener los datos del usuario:", error);
-      document.getElementById("bienvenida").textContent = "Gestión de Categorias - Administrador: invitado";
-  }
-}
-
-// Llama a la función cuando se carga la página
 obtenerUsuario();
 
 //Busqueda
 const inputBuscador = document.getElementById('buscador');
-const cuerpoTabla = document.querySelector('.table tbody'); 
+const cuerpoTabla = document.querySelector('.table tbody');
 
 
 inputBuscador.addEventListener('input', () => {
@@ -85,7 +72,7 @@ inputBuscador.addEventListener('input', () => {
   for (let i = 0; i < filas.length; i++) {
     const fila = filas[i];
     const textoFila = fila.textContent.toLowerCase();
-    
+
     if (textoFila.includes(filtro)) {
       fila.style.display = '';
     } else {
@@ -122,9 +109,9 @@ document.getElementById('formEditarCategorias').addEventListener('submit', async
 });
 
 // Eliminar usuario
-document.getElementById('btnEliminarCategoria').addEventListener('click', async function() {
+document.getElementById('btnEliminarCategoria').addEventListener('click', async function () {
   const id = document.getElementById('editar-id-categoria').value;
-  
+
   if (!id) {
     alert('No se ha seleccionado ninguna categoria para eliminar');
     return;
@@ -132,19 +119,19 @@ document.getElementById('btnEliminarCategoria').addEventListener('click', async 
 
   if (confirm('¿Estás seguro de que deseas eliminar esta categoria? Esta acción no se puede deshacer.')) {
     try {
-      const response = await axios.delete(`http://localhost:3000/api/categorias/${id}`, { 
-        withCredentials: true 
+      const response = await axios.delete(`http://localhost:3000/api/categorias/${id}`, {
+        withCredentials: true
       });
-      
+
       alert('Categoria eliminada correctamente');
-      
+
       // Cierra el modal
       const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarCategorias'));
       modal.hide();
-      
+
       // Recarga la tabla
       location.reload();
-      
+
     } catch (error) {
       console.error('Error al eliminar la categoria:', error);
       if (error.response && error.response.status === 404) {
@@ -157,11 +144,11 @@ document.getElementById('btnEliminarCategoria').addEventListener('click', async 
 });
 
 // Función para abrir el modal de creación
-document.getElementById('fab').addEventListener('click', function() {
- 
+document.getElementById('fab').addEventListener('click', function () {
+
   // Resetear el formulario
   document.getElementById('formCrearCategoria').reset();
-  
+
   // Mostrar el modal
   const modal = new bootstrap.Modal(document.getElementById('modalCrearCategoria'));
   modal.show();
@@ -171,32 +158,32 @@ document.getElementById('fab').addEventListener('click', function() {
 document.getElementById('formCrearCategoria').addEventListener('submit', async (e) => {
   e.preventDefault();
   const data = {
-      nombre: document.getElementById('crear-nombre-categoria').value,
+    nombre: document.getElementById('crear-nombre-categoria').value,
   };
 
   try {
-      const response = await axios.post('http://localhost:3000/api/categorias', data, { 
-          withCredentials: true,
-          headers: {
-              'Content-Type': 'application/json'
-          }
-      });
-      
-      alert('Categoria creada correctamente');
-      
-      // Cerrar el modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('modalCrearCategoria'));
-      modal.hide();
-      
-      // Recargar la tabla
-      location.reload();
-      
-  } catch (error) {
-      console.error('Error al crear la categoria:', error);
-      if (error.response && error.response.status === 400) {
-          alert('Datos incompletos: ' + error.response.data.message);
-      } else {
-          alert('Error al crear la categoria');
+    const response = await axios.post('http://localhost:3000/api/categorias', data, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
       }
+    });
+
+    alert('Categoria creada correctamente');
+
+    // Cerrar el modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCrearCategoria'));
+    modal.hide();
+
+    // Recargar la tabla
+    location.reload();
+
+  } catch (error) {
+    console.error('Error al crear la categoria:', error);
+    if (error.response && error.response.status === 400) {
+      alert('Datos incompletos: ' + error.response.data.message);
+    } else {
+      alert('Error al crear la categoria');
+    }
   }
 });
