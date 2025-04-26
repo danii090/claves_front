@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Configurar el logout
-    setupLogout(); // Usa el ID por defecto 'logout'
+document.addEventListener("DOMContentLoaded", function () {
+  // Configurar el logout
+  setupLogout(); // Usa el ID por defecto 'logout'
 });
 
 //Barra lateral
@@ -34,12 +34,12 @@ async function obtenerUsuario() {
     const respuesta = await axios.get('http://localhost:3000/api/auth/session', { withCredentials: true }); // Solicitud GET con Axios
     const datos = respuesta.data; // Acceso a los datos devueltos por la API
 
-      // Inserta el nombre del usuario en el HTML
-      const nombreUsuario = datos.session.nombre || "Usuario"; // Si no hay nombre, usa "Usuario" como valor predeterminado
-      document.getElementById("bienvenida").textContent = `Cuenta de: ${nombreUsuario}`;
+    // Inserta el nombre del usuario en el HTML
+    const nombreUsuario = datos.session.nombre || "Usuario"; // Si no hay nombre, usa "Usuario" como valor predeterminado
+    document.getElementById("bienvenida").textContent = `Cuenta de: ${nombreUsuario}`;
   } catch (error) {
-      console.error("Error al obtener los datos del usuario:", error);
-      document.getElementById("bienvenida").textContent = "Cuenta de Invitado";
+    console.error("Error al obtener los datos del usuario:", error);
+    document.getElementById("bienvenida").textContent = "Cuenta de Invitado";
   }
 }
 
@@ -50,13 +50,13 @@ obtenerUsuario();
 async function mostrarDatosUsuario() {
   try {
     // Obtener datos de sesión
-    const respuesta = await axios.get('http://localhost:3000/api/auth/session', { 
-      withCredentials: true 
+    const respuesta = await axios.get('http://localhost:3000/api/auth/session', {
+      withCredentials: true
     });
 
-    
+
     const datosUsuario = respuesta.data.session;
-    
+
     // Crear HTML para mostrar la información
     let htmlInfo = `
       <div class="card">
@@ -66,24 +66,24 @@ async function mostrarDatosUsuario() {
             <li class="list-group-item"><strong>Nombre:</strong> ${datosUsuario.nombre || "No disponible"}</li>
             <li class="list-group-item"><strong>Email:</strong> ${datosUsuario.email || "No disponible"}</li>
             <li class="list-group-item"><strong>Rol:</strong> ${datosUsuario.rol.nombre || "Usuario"}</li>
-            <li class="list-group-item"><strong>Familia a la que pertenece:</strong> ${datosUsuario.familia.nombre || "Sin familia"}</li>
+            <li class="list-group-item"><strong>Familia a la que pertenece:</strong> ${datosUsuario.familia?.nombre || "Sin familia"}</li>
     `;
-    
+
     htmlInfo += `
           </ul>
         </div>
       </div>
     `;
-    
+
     // Insertar en el DOM
     document.querySelector(".main .text-justify").innerHTML += htmlInfo;
-    
+
     // Agregar event listeners para los botones
     document.getElementById("btnCambiarClave")?.addEventListener("click", () => {
       // Lógica para cambiar contraseña
       alert("Funcionalidad para cambiar contraseña en desarrollo");
     });
-    
+
   } catch (error) {
     console.error("Error al obtener los datos del usuario:", error);
     document.querySelector(".main .text-justify").innerHTML += `
@@ -98,59 +98,59 @@ document.addEventListener("DOMContentLoaded", mostrarDatosUsuario);
 
 async function obtenerUsuario() {
   try {
-      const respuesta = await axios.get('http://localhost:3000/api/auth/session', { 
-          withCredentials: true 
-      });
-      
-      const nombreUsuario = respuesta.data?.session?.nombre || "Invitado";
-      const elementoBienvenida = document.getElementById("bienvenida");
-      
-      // Respetar el texto original y solo agregar el nombre
-      const textoOriginal = elementoBienvenida.textContent.trim();
-      const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de"; // Elimina ": " si existe
-      
-      elementoBienvenida.textContent = `${textoBase} ${nombreUsuario}`;
-      
+    const respuesta = await axios.get('http://localhost:3000/api/auth/session', {
+      withCredentials: true
+    });
+
+    const nombreUsuario = respuesta.data?.session?.nombre || "Invitado";
+    const elementoBienvenida = document.getElementById("bienvenida");
+
+    // Respetar el texto original y solo agregar el nombre
+    const textoOriginal = elementoBienvenida.textContent.trim();
+    const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de"; // Elimina ": " si existe
+
+    elementoBienvenida.textContent = `${textoBase} ${nombreUsuario}`;
+
   } catch (error) {
-      console.error("Error al obtener datos del usuario:", error);
-      const elementoBienvenida = document.getElementById("bienvenida");
-      const textoOriginal = elementoBienvenida.textContent.trim();
-      const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de";
-      
-      elementoBienvenida.textContent = `${textoBase}: Invitado`;
+    console.error("Error al obtener datos del usuario:", error);
+    const elementoBienvenida = document.getElementById("bienvenida");
+    const textoOriginal = elementoBienvenida.textContent.trim();
+    const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de";
+
+    elementoBienvenida.textContent = `${textoBase}: Invitado`;
   }
 }
 
 async function logout() {
   try {
-      const response = await axios.post('http://localhost:3000/api/auth/logout', {}, {
-          withCredentials: true
-      });
-      
-      if (response.status === 200) {
-          // Limpiar almacenamiento local
-          localStorage.clear();
-          sessionStorage.clear();
-          
-          // Redirigir al login
-          window.location.href = 'index.html';
-      }
+    const response = await axios.post('http://localhost:3000/api/auth/logout', {}, {
+      withCredentials: true
+    });
+
+    if (response.status === 200) {
+      // Limpiar almacenamiento local
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Redirigir al login
+      window.location.href = 'index.html';
+    }
   } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      throw error; // Permite manejar el error en el componente que llama la función
+    console.error('Error al cerrar sesión:', error);
+    throw error; // Permite manejar el error en el componente que llama la función
   }
 }
 
 function setupLogout(elementId = 'logout') {
   const logoutElement = document.getElementById(elementId);
   if (logoutElement) {
-      logoutElement.addEventListener('click', async (e) => {
-          e.preventDefault();
-          try {
-              await logout();
-          } catch (error) {
-              alert('Ocurrió un error al cerrar sesión. Por favor intente nuevamente.');
-          }
-      });
+    logoutElement.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await logout();
+      } catch (error) {
+        alert('Ocurrió un error al cerrar sesión. Por favor intente nuevamente.');
+      }
+    });
   }
 }
