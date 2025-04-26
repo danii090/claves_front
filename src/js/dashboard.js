@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Configurar el logout
-    setupLogout(); // Usa el ID por defecto 'logout'
+document.addEventListener("DOMContentLoaded", function () {
+  // Configurar el logout
+  setupLogout(); // Usa el ID por defecto 'logout'
 });
 //Barra lateral
 const hamBurger = document.querySelector(".toggle-btn");
@@ -258,59 +258,86 @@ document.getElementById('formCrearClave').addEventListener('submit', async (e) =
 
 async function obtenerUsuario() {
   try {
-      const respuesta = await axios.get('http://localhost:3000/api/auth/session', { 
-          withCredentials: true 
-      });
-      
-      const nombreUsuario = respuesta.data?.session?.nombre || "Invitado";
-      const elementoBienvenida = document.getElementById("bienvenida");
-      
-      // Respetar el texto original y solo agregar el nombre
-      const textoOriginal = elementoBienvenida.textContent.trim();
-      const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de"; // Elimina ": " si existe
-      
-      elementoBienvenida.textContent = `${textoBase} ${nombreUsuario}`;
-      
+    const respuesta = await axios.get('http://localhost:3000/api/auth/session', {
+      withCredentials: true
+    });
+
+    const nombreUsuario = respuesta.data?.session?.nombre || "Invitado";
+    const elementoBienvenida = document.getElementById("bienvenida");
+
+    // Respetar el texto original y solo agregar el nombre
+    const textoOriginal = elementoBienvenida.textContent.trim();
+    const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de"; // Elimina ": " si existe
+
+    elementoBienvenida.textContent = `${textoBase} ${nombreUsuario}`;
+
   } catch (error) {
-      console.error("Error al obtener datos del usuario:", error);
-      const elementoBienvenida = document.getElementById("bienvenida");
-      const textoOriginal = elementoBienvenida.textContent.trim();
-      const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de";
-      
-      elementoBienvenida.textContent = `${textoBase}: Invitado`;
+    console.error("Error al obtener datos del usuario:", error);
+    const elementoBienvenida = document.getElementById("bienvenida");
+    const textoOriginal = elementoBienvenida.textContent.trim();
+    const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de";
+
+    elementoBienvenida.textContent = `${textoBase}: Invitado`;
   }
 }
 
 async function logout() {
   try {
-      const response = await axios.post('http://localhost:3000/api/auth/logout', {}, {
-          withCredentials: true
-      });
-      
-      if (response.status === 200) {
-          // Limpiar almacenamiento local
-          localStorage.clear();
-          sessionStorage.clear();
-          
-          // Redirigir al login
-          window.location.href = 'index.html';
-      }
+    const response = await axios.post('http://localhost:3000/api/auth/logout', {}, {
+      withCredentials: true
+    });
+
+    if (response.status === 200) {
+      // Limpiar almacenamiento local
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Redirigir al login
+      window.location.href = 'index.html';
+    }
   } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      throw error; // Permite manejar el error en el componente que llama la función
+    console.error('Error al cerrar sesión:', error);
+    throw error; // Permite manejar el error en el componente que llama la función
   }
 }
 
 function setupLogout(elementId = 'logout') {
   const logoutElement = document.getElementById(elementId);
   if (logoutElement) {
-      logoutElement.addEventListener('click', async (e) => {
-          e.preventDefault();
-          try {
-              await logout();
-          } catch (error) {
-              alert('Ocurrió un error al cerrar sesión. Por favor intente nuevamente.');
-          }
-      });
+    logoutElement.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await logout();
+      } catch (error) {
+        alert('Ocurrió un error al cerrar sesión. Por favor intente nuevamente.');
+      }
+    });
   }
 }
+
+// Filtrar por categoria
+const cargarSelect = async () => {
+  const { data } = await axios.get('http://localhost:3000/api/categorias/', {
+    withCredentials: true
+  });
+  const $select = $('#select-categoria');
+  data.map(c => {
+    $select.append($('<option>', { value: c.nombre_categoria, text: c.nombre_categoria }))
+  });
+}
+
+cargarSelect();
+
+$('#select-categoria').on('change', function () {
+  let opcion = $(this).val();
+
+  $('#tabla tbody tr').each(function () {
+    let categoria = $(this).find('td:eq(2)').text();
+
+    if (opcion === "todos" || categoria === opcion) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  })
+})
