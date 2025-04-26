@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", function() {
     // Configurar el logout
     setupLogout(); // Usa el ID por defecto 'logout'
@@ -30,7 +32,7 @@ axios.get('http://localhost:3000/api/auth/session', {
 //Categorias en la tabla
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/categorias', { withCredentials: true });
+    const response = await axios.get('http://localhost:3000/api/familias', { withCredentials: true });
 
     console.log("Datos recibidos:", response.data);
 
@@ -39,13 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const claves = Array.isArray(response.data) ? response.data : [response.data];
 
-    claves.forEach((categorias, index) => {
+    claves.forEach((familias, index) => {
       const fila = document.createElement('tr');
       fila.innerHTML = `
           <th scope="row">${index + 1}</th>
-          <td>${categorias.nombre_categoria}</td>
+          <td>${familias.nombre_familia}</td>
+          <td>${familias.id_jefe}</td>
           <th>
-            <button type="button" class="btn btn-outline-primary" onclick='abrirModalEditar(${JSON.stringify(categorias)})'>Editar</button>
+            <button type="button" class="btn btn-outline-primary" onclick='abrirModalEditar(${JSON.stringify(familias)})'>Editar</button>
           </th>
         `;
       cuerpoTabla.appendChild(fila);
@@ -83,109 +86,65 @@ inputBuscador.addEventListener('input', () => {
   }
 });
 ///Modal
-function abrirModalEditar(categorias) {
-  document.getElementById('editar-id-categoria').value = categorias.id_categoria;
-  document.getElementById('editar-nombre-categoria').value = categorias.nombre_categoria;
+function abrirModalEditar(familias) {
+  document.getElementById('editar-id-familia').value = familias.id_familia;
+  document.getElementById('editar-nombre-familia').value = familias.nombre_familia;
+  document.getElementById('editar-lider-familia').value = familias.id_jefe;
 
-  const modal = new bootstrap.Modal(document.getElementById('modalEditarCategorias'));
+  const modal = new bootstrap.Modal(document.getElementById('modalEditarFamilias'));
   modal.show();
 }
 //Editar Categorias
-document.getElementById('formEditarCategorias').addEventListener('submit', async (e) => {
+document.getElementById('formEditarFamilias').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const id = document.getElementById('editar-id-categoria').value;
+  const id = document.getElementById('editar-id-familia').value;
   const data = {
-    nombre: document.getElementById('editar-nombre-categoria').value,
-
+    nombre: document.getElementById('editar-nombre-familia').value,
+    jefe: document.getElementById('editar-lider-familia').value,
   };
 
   try {
-    await axios.put(`http://localhost:3000/api/categorias/${id}`, data, { withCredentials: true });
-    alert('Categoria actualizada correctamente');
+    await axios.put(`http://localhost:3000/api/familias/${id}`, data, { withCredentials: true });
+    alert('Familia actualizada correctamente');
     location.reload(); // Recarga la tabla
   } catch (error) {
-    console.error('Error al editar la categoria:', error);
+    console.error('Error al editar la familia:', error);
     alert('Error al guardar los cambios');
   }
 });
 
-// Eliminar usuario
-document.getElementById('btnEliminarCategoria').addEventListener('click', async function () {
-  const id = document.getElementById('editar-id-categoria').value;
+// Eliminar familia
+document.getElementById('btnEliminarFamilia').addEventListener('click', async function () {
+  const id = document.getElementById('editar-id-familia').value;
 
   if (!id) {
-    alert('No se ha seleccionado ninguna categoria para eliminar');
+    alert('No se ha seleccionado ninguna familia para eliminar');
     return;
   }
 
-  if (confirm('¿Estás seguro de que deseas eliminar esta categoria? Esta acción no se puede deshacer.')) {
+  if (confirm('¿Estás seguro de que deseas eliminar esta familia? Esta acción no se puede deshacer.')) {
     try {
-      const response = await axios.delete(`http://localhost:3000/api/categorias/${id}`, {
+      const response = await axios.delete(`http://localhost:3000/api/familias/${id}`, {
         withCredentials: true
       });
 
-      alert('Categoria eliminada correctamente');
+      alert('Familia eliminada correctamente');
 
       // Cierra el modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarCategorias'));
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarFamilias'));
       modal.hide();
 
       // Recarga la tabla
       location.reload();
 
     } catch (error) {
-      console.error('Error al eliminar la categoria:', error);
+      console.error('Error al eliminar la familia:', error);
       if (error.response && error.response.status === 404) {
-        alert('No se encontró la categoria o no tienes permiso para eliminarla');
+        alert('No se encontró la familia o no tienes permiso para eliminarla');
       } else {
-        alert('Error al eliminar la categoria');
+        alert('Error al eliminar la familia');
       }
-    }
-  }
-});
-
-// Función para abrir el modal de creación
-document.getElementById('fab').addEventListener('click', function () {
-
-  // Resetear el formulario
-  document.getElementById('formCrearCategoria').reset();
-
-  // Mostrar el modal
-  const modal = new bootstrap.Modal(document.getElementById('modalCrearCategoria'));
-  modal.show();
-});
-
-// Manejar el envío del formulario de creación
-document.getElementById('formCrearCategoria').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const data = {
-    nombre: document.getElementById('crear-nombre-categoria').value,
-  };
-
-  try {
-    const response = await axios.post('http://localhost:3000/api/categorias', data, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    alert('Categoria creada correctamente');
-
-    // Cerrar el modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCrearCategoria'));
-    modal.hide();
-
-    // Recargar la tabla
-    location.reload();
-
-  } catch (error) {
-    console.error('Error al crear la categoria:', error);
-    if (error.response && error.response.status === 400) {
-      alert('Datos incompletos: ' + error.response.data.message);
-    } else {
-      alert('Error al crear la categoria');
     }
   }
 });
