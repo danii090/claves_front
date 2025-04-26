@@ -28,3 +28,53 @@ form.addEventListener('submit', async (event) => {
         }
     }
 });
+
+const container = document.querySelector('.container');
+const registerBtn = document.querySelector('.register-btn');
+const loginBtn = document.querySelector('.login-btn');
+
+
+registerBtn.addEventListener('click', () => {
+    container.classList.add('active');
+});
+
+loginBtn.addEventListener('click', () => {
+    container.classList.remove('active');
+});
+
+
+$(document).ready(function () {
+    $('#form-registro').submit(async function (e) {
+        e.preventDefault();
+        const usuario = $('#usuario').val();
+        const correo = $('#correo').val();
+        const contrasena = $('#contrasena').val();
+
+        const datos = {
+            nombre: usuario,
+            email: correo,
+            clave: contrasena,
+        }
+
+        try {
+            const respuesta = await axios.post('http://localhost:3000/api/auth/register', datos, {
+                withCredentials: true
+            });
+            if (respuesta.status === 201) {
+                Swal.fire({
+                    title: "Registro exitoso!",
+                    text: respuesta.data.message,
+                    icon: "success",
+                });
+            }
+        } catch (err) {
+            console.log(datos, err);
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: err.response.data.message,
+            });
+        }
+    })
+});
