@@ -11,49 +11,55 @@
     <link rel="icon" href="../assets/logo.png" type="image/x-icon">
     <script src="../js/axios.min.js"></script>
 </head>
-<!-- Modal para editar categorias -->
-<div class="modal fade" id="modalEditarCategorias" tabindex="-1" aria-labelledby="modalEditarCategoriasLabel"
-    aria-hidden="true">
+<!-- Modal para crear familia -->
+<div class="modal fade" id="modalCrearFamilia" tabindex="-1" aria-labelledby="modalCrearFamiliaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarCategoriasLabel">Editar Categorias</h5>
+                <h5 class="modal-title" id="modalCrearFamiliaLabel">Crear Nueva Familia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form id="formEditarCategorias">
-                    <input type="hidden" id="editar-id-categoria">
+                <form id="formCrearFamilia">
                     <div class="mb-3">
-                        <label for="editar-nombre-categoria" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="editar-nombre-categoria" required>
+                        <label for="nombre-familia" class="form-label">Nombre de la Familia</label>
+                        <input type="text" class="form-control" id="nombre-familia" required>
+                        <div class="form-text">Al crear una familia, te convertirás en el líder de la misma.</div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-danger" id="btnEliminarCategoria">Eliminar
-                            Categoria</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Crear Familia</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal para crear usuario -->
-<div class="modal fade" id="modalCrearCategoria" tabindex="-1" aria-labelledby="modalCrearCategoriaLabel"
-    aria-hidden="true">
+
+<!-- Modal para crear invitación -->
+<div class="modal fade" id="modalCrearInvitacion" tabindex="-1" aria-labelledby="modalCrearInvitacionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalCrearCategoriaLabel">Nueva Categoria</h5>
+                <h5 class="modal-title" id="modalCrearInvitacionLabel">Generar Invitación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form id="formCrearCategoria">
+                <form id="formCrearInvitacion">
                     <div class="mb-3">
-                        <label for="crear-nombre-categoria" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="crear-nombre-categoria" required>
+                        <label for="fecha-vencimiento" class="form-label">Fecha de Vencimiento</label>
+                        <input type="date" class="form-control" id="fecha-vencimiento" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token-invitacion" class="form-label">Token de Invitación</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="token-invitacion" readonly>
+                            <button class="btn btn-outline-secondary" type="button" id="btn-copiar-token">
+                                <i class="lni lni-clipboard"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Guardar Categoria</button>
+                        <button type="submit" class="btn btn-primary">Generar Invitación</button>
                     </div>
                 </form>
             </div>
@@ -87,7 +93,7 @@
                     </a>
                     <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a href="crear_familia" class="sidebar-link">Crear una familia</a>
+                            <a href="crear_familia.html" class="sidebar-link">Crear una familia</a>
                         </li>
                         <li class="sidebar-item">
                             <a href="compartidas.html" class="sidebar-link">Contraseñas compartidas</a>
@@ -129,40 +135,69 @@
                 </a>
             </div>
         </aside>
+
+            <!-- Reemplaza el contenido dentro de <div class="main p-3"> en crear_familia.html -->
         <div class="main p-3">
-            <div class="text-justify">
-                <h1>
-                    Categorias De Claves
-                </h1>
-                <h5 id="bienvenida">Gestión de Categorias - Administrador: </h5>
-                <br>
+         <div class="text-justify">
+            <h1>Gestión de Familia</h1>
+        
+              <!-- Sección para crear familia (visible si no tiene familia) -->
+            <div class="card mb-4" id="card-crear-familia">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="lni lni-plus"></i> Crear Nueva Familia
+                </h5>
             </div>
-            <div class="input-group mb-3">
-                <input type="text" id="buscador" class="form-control" placeholder="Buscar categoria"
-                    aria-label="Buscar Clave" aria-describedby="button-addon2">
+            <div class="card-body">
+                <p>Al crear una familia, te convertirás automáticamente en el líder de la misma.</p>
+                <button class="btn btn-primary" id="btn-crear-familia" data-bs-toggle="modal" data-bs-target="#modalCrearFamilia">
+                    Crear Familia
+                </button>
             </div>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-group-divider">
+        </div>
 
-                    </tbody>
-                </table>
+        <!-- Sección para gestionar invitaciones (visible si ya tiene familia) -->
+        <div class="card d-none" id="card-gestion-invitaciones">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="lni lni-envelope"></i> Invitaciones
+                </h5>
             </div>
-            <button id="fab" class="fab">
-                <i class="lni lni-plus"></i>
-            </button>
+            <div class="card-body">
+                <p>Genera invitaciones para que otros usuarios se unan a tu familia.</p>
+                <button class="btn btn-primary mb-3" id="btn-crear-invitacion" data-bs-toggle="modal" data-bs-target="#modalCrearInvitacion">
+                    Generar Nueva Invitación
+                </button>
+                
+                <!-- Listado de invitaciones existentes (puedes implementarlo después) -->
+                <div class="mt-4">
+                    <h6>Invitaciones Activas</h6>
+                    <div class="list-group" id="lista-invitaciones">
+                        <!-- Las invitaciones se cargarán aquí dinámicamente -->
+                        <div class="text-muted">No hay invitaciones activas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Información de la familia actual (visible si tiene familia) -->
+        <div class="card d-none mt-4" id="card-info-familia">
+                <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="lni lni-users"></i> Mi Familia
+                </h5>
+                </div>
+                <div class="card-body">
+                 <div id="info-familia">
+                    <!-- La información de la familia se cargará aquí dinámicamente -->
+                 </div>
+            </div>
+         </div>
         </div>
     </div>
+    </div>
     <script src="../js/bootstrap.min.js"></script>
-    <script src="../js/gestionar_categorias.js"></script>
+    <script src="../js/crear_familia.js"></script>
 </body>
 
 </html>
