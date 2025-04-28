@@ -41,6 +41,8 @@ $(document).ready(function () {
                     title: "Familia creada!",
                     text: respuesta.data.message,
                     icon: "success",
+                }).then(() => {
+                    location.reload();
                 });
             }
         } catch (err) {
