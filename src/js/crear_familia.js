@@ -9,11 +9,12 @@ $(document).ready(function () {
 
         if (familia !== null) {
             $('#card-crear-familia').hide();
+            $('#card-aceptar-invitacion').hide();
             $('#card-crear-familia').before(`
                 <div class="card mb-4" id="card-crear-familia">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
-                            <i class="lni lni-plus"></i> Familia ${familia.nombre}
+                            <i class="lni lni-plus"></i> Nombre: ${familia.nombre}
                         </h5>
                     </div>
                     <div class="card-body">
@@ -26,6 +27,31 @@ $(document).ready(function () {
 
     getSession();
 
+
+    $('#aceptar-invitacion').click(async function () {
+        try {
+            const token = $('#token').val();
+            console.log(token);
+
+            const respuesta = await axios.post(`http://localhost:3000/api/invitaciones/aceptar/${token}`, {}, {
+                withCredentials: true
+            });
+
+            Swal.fire({
+                title: "Invitacion valida!",
+                text: respuesta.data.message,
+                icon: "success",
+            }).then(() => {
+                location.reload();
+            });
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: err.response.data.message,
+            });
+        }
+    })
 
     $('#formCrearFamilia').on('submit', async function (e) {
         e.preventDefault();

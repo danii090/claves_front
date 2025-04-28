@@ -159,52 +159,31 @@
                     </div>
                 </div>
 
-                <!-- Sección para gestionar invitaciones (visible si ya tiene familia) -->
-                <div class="card d-none" id="card-gestion-invitaciones">
+                <div class="card mb-4" id="card-aceptar-invitacion">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
-                            <i class="lni lni-envelope"></i> Invitaciones
+                            <i class="lni lni-plus"></i> Aceptar invitación
                         </h5>
                     </div>
-                    <div class="card-body">
-                        <p>Genera invitaciones para que otros usuarios se unan a tu familia.</p>
-                        <button class="btn btn-primary mb-3" id="btn-crear-invitacion" data-bs-toggle="modal"
-                            data-bs-target="#modalCrearInvitacion">
-                            Generar Nueva Invitación
-                        </button>
-
-                        <!-- Listado de invitaciones existentes (puedes implementarlo después) -->
-                        <div class="mt-4">
-                            <h6>Invitaciones Activas</h6>
-                            <div class="list-group" id="lista-invitaciones">
-                                <!-- Las invitaciones se cargarán aquí dinámicamente -->
-                                <div class="text-muted">No hay invitaciones activas</div>
-                            </div>
+                    <div class="card-body row align-items-center">
+                        <div class="col-md-8 col-12 mb-2 mb-md-0">
+                            <input type="text" class="form-control" placeholder="Ingresa tu token" id="token">
+                        </div>
+                        <div class="col-md-4 col-12 d-flex">
+                            <button class="btn btn-primary w-100" style="white-space: nowrap;" id="aceptar-invitacion">
+                                Aceptar invitación
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Información de la familia actual (visible si tiene familia) -->
-                <div class="card d-none mt-4" id="card-info-familia">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="lni lni-users"></i> Mi Familia
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="info-familia">
-                            <!-- La información de la familia se cargará aquí dinámicamente -->
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
-    <script src="../js/jquery.min.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
-    <script src="../js/sweetalert2.min.js"></script>
-    <script src="../js/crear_familia.js"></script>
+        <script src="../js/jquery.min.js"></script>
+        <script src="../js/sidebar.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script src="../js/sweetalert2.min.js"></script>
+        <script src="../js/crear_familia.js"></script>
 </body>
 
 </html>
