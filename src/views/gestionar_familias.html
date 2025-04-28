@@ -11,36 +11,6 @@
     <link rel="icon" href="../assets/logo.png" type="image/x-icon">
     <script src="../js/axios.min.js"></script>
 </head>
-<!-- Modal para editar categorias -->
-<div class="modal fade" id="modalEditarFamilias" tabindex="-1" aria-labelledby="modalEditarFamiliasLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarFamiliasLabel">Editar Familias</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formEditarFamilias">
-                    <input type="hidden" id="editar-id-familia">
-                    <div class="mb-3">
-                        <label for="editar-nombre-familia" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="editar-nombre-familia" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editar-lider-familia" class="form-label">Lider</label>
-                        <input type="text" class="form-control" id="editar-lider-familia" required>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-danger" id="btnEliminarFamilia">Eliminar
-                            Familia</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <body>
     <div class="wrapper">
@@ -68,13 +38,13 @@
                     </a>
                     <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a href="crear_familia" class="sidebar-link">Crear una familia</a>
+                            <a href="crear_familia.html" class="sidebar-link">Crear una familia</a>
                         </li>
                         <li class="sidebar-item">
                             <a href="compartidas.html" class="sidebar-link">Contraseñas compartidas</a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="gestionar_familia.html" class="sidebar-link">Gestionar familia</a>
+                            <a href="gestionar_familias.html" class="sidebar-link">Gestionar familia</a>
                         </li>
                     </ul>
                 </li>
@@ -110,30 +80,24 @@
                 </a>
             </div>
         </aside>
+
+        <!-- Reemplaza el contenido dentro de <div class="main p-3"> en crear_familia.html -->
         <div class="main p-3">
             <div class="text-justify">
-                <h1>
-                    Familias
-                </h1>
-                <h5 id="bienvenida">Gestión de Familias - Administrador: </h5>
+                <h1>Miembros familia</h1>
                 <br>
-            </div>
-            <div class="input-group mb-3">
-                <input type="text" id="buscador" class="form-control" placeholder="Buscar familia"
-                    aria-label="Buscar Clave" aria-describedby="button-addon2">
-            </div>
-            <div class="table-responsive">
+                <button class="btn btn-primary">Crear Invitacion</button>
+                <br>
+                <br>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Nombre</th>
-                            <th scope="col">Líder</th>
-                            <th scope="col"></th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="table-group-divider">
-
+                    <tbody id="tbody">
                     </tbody>
                 </table>
             </div>
@@ -142,6 +106,7 @@
     <script src="../js/jquery.min.js"></script>
     <script src="../js/sidebar.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/sweetalert2.min.js"></script>
     <script src="../js/gestionar_familias.js"></script>
 </body>
 

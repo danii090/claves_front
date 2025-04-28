@@ -1,209 +1,78 @@
+$(document).ready(function () {
+    const getMiembros = async () => {
+        try {
+            const respuesta = await axios.get('http://localhost:3000/api/familias/miembros', {
+                withCredentials: true
+            });
 
+            const miembros = respuesta.data;
+            console.log(miembros);
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Configurar el logout
-    setupLogout(); // Usa el ID por defecto 'logout'
-});
-//Barra lateral
-const hamBurger = document.querySelector(".toggle-btn");
+            miembros.map(m => {
+                $('#tbody').append(`
+                  <tr>
+                      <td>${m.nombre}</td>
+                      <td>${m.email}</td>
+                      <td>
+                        <button class="btn btn-danger btn-expulsar" data-id-usuario="${m.id_usuario}">Expulsar</button>
+                      </td>
+                  </tr>
+              `);
+            });
 
-hamBurger.addEventListener("click", function () {
-  document.querySelector("#sidebar").classList.toggle("expand");
-});
+            // Aquí llamamos a expulsarMiembro después de pintar los botones
+            expulsarMiembro();
 
-//VERIFICAR SESION
-// Verifica la sesión cuando se carga el dashboard
-axios.get('http://localhost:3000/api/auth/session', {
-  withCredentials: true
-})
-  .then(response => {
-    console.log('Sesión activa', response.data.session);
-
-  })
-  .catch(error => {
-    alert('No tienes una sesión activa. Porfavor inicia sesión o registrate.');
-
-    // Redirigir después de 2 segundos (2000 milisegundos)
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 1000);
-  });
-
-//Categorias en la tabla
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const response = await axios.get('http://localhost:3000/api/familias', { withCredentials: true });
-
-    console.log("Datos recibidos:", response.data);
-
-    const cuerpoTabla = document.querySelector('.table tbody');
-    cuerpoTabla.innerHTML = '';
-
-    const claves = Array.isArray(response.data) ? response.data : [response.data];
-
-    claves.forEach((familias, index) => {
-      const fila = document.createElement('tr');
-      fila.innerHTML = `
-          <th scope="row">${index + 1}</th>
-          <td>${familias.nombre_familia}</td>
-          <td>${familias.id_jefe}</td>
-          <th>
-            <button type="button" class="btn btn-outline-primary" onclick='abrirModalEditar(${JSON.stringify(familias)})'>Editar</button>
-          </th>
-        `;
-      cuerpoTabla.appendChild(fila);
-    });
-
-  } catch (error) {
-    console.error("Error completo:", error);
-    alert("Error al cargar datos. Ver consola para detalles.");
-  }
-});
-
-
-//Bienvenida
-// Función para obtener datos del usuario 
-obtenerUsuario();
-
-//Busqueda
-const inputBuscador = document.getElementById('buscador');
-const cuerpoTabla = document.querySelector('.table tbody');
-
-
-inputBuscador.addEventListener('input', () => {
-  const filtro = inputBuscador.value.toLowerCase();
-  const filas = cuerpoTabla.getElementsByTagName('tr');
-
-  for (let i = 0; i < filas.length; i++) {
-    const fila = filas[i];
-    const textoFila = fila.textContent.toLowerCase();
-
-    if (textoFila.includes(filtro)) {
-      fila.style.display = '';
-    } else {
-      fila.style.display = 'none';
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: err.response?.data?.message || "Error al cargar miembros",
+            });
+        }
     }
-  }
-});
-///Modal
-function abrirModalEditar(familias) {
-  document.getElementById('editar-id-familia').value = familias.id_familia;
-  document.getElementById('editar-nombre-familia').value = familias.nombre_familia;
-  document.getElementById('editar-lider-familia').value = familias.id_jefe;
 
-  const modal = new bootstrap.Modal(document.getElementById('modalEditarFamilias'));
-  modal.show();
-}
-//Editar Categorias
-document.getElementById('formEditarFamilias').addEventListener('submit', async (e) => {
-  e.preventDefault();
+    const expulsarMiembro = () => {
+        $('.btn-expulsar').click(async function () {
+            const idUsuario = $(this).data('id-usuario');
 
-  const id = document.getElementById('editar-id-familia').value;
-  const data = {
-    nombre: document.getElementById('editar-nombre-familia').value,
-    jefe: document.getElementById('editar-lider-familia').value,
-  };
+            const confirmacion = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción expulsará al miembro.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, expulsar',
+                cancelButtonText: 'Cancelar'
+            });
 
-  try {
-    await axios.put(`http://localhost:3000/api/familias/${id}`, data, { withCredentials: true });
-    alert('Familia actualizada correctamente');
-    location.reload(); // Recarga la tabla
-  } catch (error) {
-    console.error('Error al editar la familia:', error);
-    alert('Error al guardar los cambios');
-  }
-});
+            if (confirmacion.isConfirmed) {
+                try {
+                    await axios.delete(`http://localhost:3000/api/familias/expulsar/${idUsuario}`, {
+                        withCredentials: true
+                    });
 
-// Eliminar familia
-document.getElementById('btnEliminarFamilia').addEventListener('click', async function () {
-  const id = document.getElementById('editar-id-familia').value;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Expulsado',
+                        text: 'El miembro fue expulsado exitosamente.',
+                    });
 
-  if (!id) {
-    alert('No se ha seleccionado ninguna familia para eliminar');
-    return;
-  }
+                    // Recargar la tabla después de expulsar
+                    $('#tbody').empty();
+                    getMiembros();
 
-  if (confirm('¿Estás seguro de que deseas eliminar esta familia? Esta acción no se puede deshacer.')) {
-    try {
-      const response = await axios.delete(`http://localhost:3000/api/familias/${id}`, {
-        withCredentials: true
-      });
-
-      alert('Familia eliminada correctamente');
-
-      // Cierra el modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarFamilias'));
-      modal.hide();
-
-      // Recarga la tabla
-      location.reload();
-
-    } catch (error) {
-      console.error('Error al eliminar la familia:', error);
-      if (error.response && error.response.status === 404) {
-        alert('No se encontró la familia o no tienes permiso para eliminarla');
-      } else {
-        alert('Error al eliminar la familia');
-      }
+                } catch (err) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response?.data?.message || "Error al expulsar al miembro",
+                    });
+                }
+            }
+        });
     }
-  }
+
+    getMiembros();
 });
-
-async function obtenerUsuario() {
-  try {
-      const respuesta = await axios.get('http://localhost:3000/api/auth/session', { 
-          withCredentials: true 
-      });
-      
-      const nombreUsuario = respuesta.data?.session?.nombre || "Invitado";
-      const elementoBienvenida = document.getElementById("bienvenida");
-      
-      // Respetar el texto original y solo agregar el nombre
-      const textoOriginal = elementoBienvenida.textContent.trim();
-      const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de"; // Elimina ": " si existe
-      
-      elementoBienvenida.textContent = `${textoBase} ${nombreUsuario}`;
-      
-  } catch (error) {
-      console.error("Error al obtener datos del usuario:", error);
-      const elementoBienvenida = document.getElementById("bienvenida");
-      const textoOriginal = elementoBienvenida.textContent.trim();
-      const textoBase = textoOriginal.replace(/: $/, "") || "Cuenta de";
-      
-      elementoBienvenida.textContent = `${textoBase}: Invitado`;
-  }
-}
-
-async function logout() {
-  try {
-      const response = await axios.post('http://localhost:3000/api/auth/logout', {}, {
-          withCredentials: true
-      });
-      
-      if (response.status === 200) {
-          // Limpiar almacenamiento local
-          localStorage.clear();
-          sessionStorage.clear();
-          
-          // Redirigir al login
-          window.location.href = 'index.html';
-      }
-  } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      throw error; // Permite manejar el error en el componente que llama la función
-  }
-}
-
-function setupLogout(elementId = 'logout') {
-  const logoutElement = document.getElementById(elementId);
-  if (logoutElement) {
-      logoutElement.addEventListener('click', async (e) => {
-          e.preventDefault();
-          try {
-              await logout();
-          } catch (error) {
-              alert('Ocurrió un error al cerrar sesión. Por favor intente nuevamente.');
-          }
-      });
-  }
-}
