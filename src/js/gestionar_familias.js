@@ -32,6 +32,75 @@ $(document).ready(function () {
         }
     }
 
+    const crearInvitacion = () => {
+        $('#crear-invitacion').click(async function () {
+            const confirmacion = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta invitación tendrá una duración de 3 días.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, crear',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (confirmacion.isConfirmed) {
+                try {
+                    // Crear fecha de vencimiento (3 días después de ahora)
+                    const fechaVencimiento = new Date();
+                    fechaVencimiento.setDate(fechaVencimiento.getDate() + 3);
+
+                    // Formatear la fecha como YYYY-MM-DD
+                    const year = fechaVencimiento.getFullYear();
+                    const month = String(fechaVencimiento.getMonth() + 1).padStart(2, '0');
+                    const day = String(fechaVencimiento.getDate()).padStart(2, '0');
+                    const fechaFormateada = `${year}-${month}-${day}`;
+
+                    const response = await axios.post(`http://localhost:3000/api/invitaciones/`, {
+                        fecha_vencimiento: fechaFormateada  // Enviamos la fecha en formato YYYY-MM-DD
+                    }, {
+                        withCredentials: true
+                    });
+
+                    // Mostrar el token en una nueva alerta con botón de copiar
+                    await Swal.fire({
+                        title: 'Invitación creada',
+                        html: `
+                            El token de invitación es: <strong>${response.data.token}</strong>
+                            <br><br>
+                            Válido hasta: <strong>${fechaFormateada}</strong>
+                        `,
+                        icon: 'success',
+                        confirmButtonText: 'Copiar',
+                        focusConfirm: false,
+                        preConfirm: () => {
+                            // Copiar el token al portapapeles
+                            navigator.clipboard.writeText(response.data.token)
+                                .then(() => {
+                                    // Opcional: Mostrar un pequeño mensaje de que se copió
+                                    Swal.showValidationMessage('Token copiado al portapapeles');
+                                })
+                                .catch(err => {
+                                    Swal.showValidationMessage(`No se pudo copiar: ${err}`);
+                                });
+                        }
+                    });
+
+                } catch (err) {
+                    await Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo crear la invitación',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    console.error(err);
+                }
+            }
+        })
+    }
+    crearInvitacion();
+
     const expulsarMiembro = () => {
         $('.btn-expulsar').click(async function () {
             const idUsuario = $(this).data('id-usuario');
